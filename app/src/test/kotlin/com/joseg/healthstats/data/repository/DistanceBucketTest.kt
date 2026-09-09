@@ -8,18 +8,18 @@ import org.junit.Test
 class DistanceBucketTest {
 
     @Test
-    fun `default 5K preset accepts distances within the default 0_2km tolerance`() {
+    fun `default 5K preset accepts distances within the default 1km tolerance`() {
         val bucket = DistanceBucket.FIVE_K
         assertTrue(bucket.contains(Length.kilometers(5.0)))
-        assertTrue(bucket.contains(Length.kilometers(4.8)))
-        assertTrue(bucket.contains(Length.kilometers(5.2)))
+        assertTrue(bucket.contains(Length.kilometers(4.0)))
+        assertTrue(bucket.contains(Length.kilometers(6.0)))
     }
 
     @Test
     fun `default 5K preset rejects distances outside the tolerance`() {
         val bucket = DistanceBucket.FIVE_K
-        assertFalse(bucket.contains(Length.kilometers(4.7)))
-        assertFalse(bucket.contains(Length.kilometers(5.3)))
+        assertFalse(bucket.contains(Length.kilometers(3.9)))
+        assertFalse(bucket.contains(Length.kilometers(6.1)))
         assertFalse(bucket.contains(Length.kilometers(10.0)))
     }
 
