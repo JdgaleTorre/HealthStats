@@ -33,6 +33,9 @@ class FakeHealthConnectClient(
     /** AggregateRequest exposes no public properties to branch on, so tests queue responses in call order. */
     val aggregateResponses: ArrayDeque<AggregationResult> = ArrayDeque()
 
+    /** Every [AggregateRequest] received, in call order, for tests that need to inspect it (see [AggregateRequestInspection]). */
+    val capturedAggregateRequests: MutableList<AggregateRequest> = mutableListOf()
+
     var readRecordsCallCount: Int = 0
         private set
     var aggregateCallCount: Int = 0
@@ -64,6 +67,7 @@ class FakeHealthConnectClient(
 
     override suspend fun aggregate(request: AggregateRequest): AggregationResult {
         aggregateCallCount++
+        capturedAggregateRequests += request
         return aggregateResponses.removeFirstOrNull()
             ?: throw NotImplementedError("no fixture aggregate response queued")
     }

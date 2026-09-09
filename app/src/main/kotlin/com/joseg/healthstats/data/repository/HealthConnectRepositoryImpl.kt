@@ -1,11 +1,23 @@
 package com.joseg.healthstats.data.repository
 
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.aggregate.AggregateMetric
+import androidx.health.connect.client.aggregate.AggregationResult
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ElevationGainedRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
+
+private fun <T : Any> AggregationResult.orNull(metric: AggregateMetric<T>): T? =
+    if (contains(metric)) get(metric) else null
 
 class HealthConnectRepositoryImpl(private val client: HealthConnectClient) : HealthConnectRepository {
 
@@ -34,6 +46,37 @@ class HealthConnectRepositoryImpl(private val client: HealthConnectClient) : Hea
             .filter { filter.startDate == null || !it.startTime.isBefore(filter.startDate) }
             .filter { filter.endDate == null || it.startTime.isBefore(filter.endDate) }
             .sortedByDescending { it.startTime }
+    }
+
+    override suspend fun getSessionDetail(session: ExerciseSessionRecord): SessionDetail {
+        val result = client.aggregate(
+            AggregateRequest(
+                metrics = setOf(
+                    ExerciseSessionRecord.EXERCISE_DURATION_TOTAL,
+                    DistanceRecord.DISTANCE_TOTAL,
+                    TotalCaloriesBurnedRecord.ENERGY_TOTAL,
+                    HeartRateRecord.BPM_AVG,
+                    HeartRateRecord.BPM_MIN,
+                    HeartRateRecord.BPM_MAX,
+                    ElevationGainedRecord.ELEVATION_GAINED_TOTAL,
+                    SpeedRecord.SPEED_AVG,
+                    StepsRecord.COUNT_TOTAL,
+                ),
+                timeRangeFilter = TimeRangeFilter.between(session.startTime, session.endTime),
+                dataOriginFilter = setOf(session.metadata.dataOrigin),
+            ),
+        )
+        return SessionDetail(
+            duration = result.orNull(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL),
+            distance = result.orNull(DistanceRecord.DISTANCE_TOTAL),
+            calories = result.orNull(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
+            heartRateAvg = result.orNull(HeartRateRecord.BPM_AVG),
+            heartRateMin = result.orNull(HeartRateRecord.BPM_MIN),
+            heartRateMax = result.orNull(HeartRateRecord.BPM_MAX),
+            elevationGained = result.orNull(ElevationGainedRecord.ELEVATION_GAINED_TOTAL),
+            speedAvg = result.orNull(SpeedRecord.SPEED_AVG),
+            steps = result.orNull(StepsRecord.COUNT_TOTAL),
+        )
     }
 
     /** Pages through every accessible [ExerciseSessionRecord], unfiltered. */

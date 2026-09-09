@@ -24,4 +24,10 @@ interface HealthConnectRepository {
 
     /** Exercise sessions matching every non-null field of [filter], newest first. */
     suspend fun querySessions(filter: SessionFilter): List<ExerciseSessionRecord>
+
+    /**
+     * Aggregates scoped to [session]'s own start/end time window and its own source. Never
+     * combines data from a different source into the result.
+     */
+    suspend fun getSessionDetail(session: ExerciseSessionRecord): SessionDetail
 }
