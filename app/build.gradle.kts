@@ -77,6 +77,11 @@ android {
     }
 }
 
+// Compose UI tests need the host activity that androidx.compose.ui:ui-test-manifest merges into
+// the manifest, which is a debugImplementation-only dependency. This app has no release-specific
+// logic to test separately, so only the debug variant's unit tests need to run.
+tasks.matching { it.name == "testReleaseUnitTest" }.configureEach { enabled = false }
+
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17

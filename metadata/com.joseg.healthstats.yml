@@ -1,0 +1,34 @@
+Categories:
+  - Sports & Health
+License: Apache-2.0
+SourceCode: https://github.com/JdgaleTorre/HealthStats
+IssueTracker: https://github.com/JdgaleTorre/HealthStats/issues
+Changelog: https://github.com/JdgaleTorre/HealthStats/releases
+
+AutoName: HealthStats
+Summary: Browse and chart your Health Connect activity data
+Description: |-
+  HealthStats reads directly from Health Connect and gives you a unified,
+  filterable view of your activity history across the apps that write to
+  it, such as Strava, Garmin Connect, and Fitbit, including trend analysis
+  like 5K pace over time that no single source app provides on its own.
+
+  The app is read-only: it never writes to Health Connect. It has no
+  backend, no accounts, and no local database — Health Connect is the
+  sole data store, and all app state is re-queried on demand.
+
+RepoType: git
+Repo: https://github.com/JdgaleTorre/HealthStats
+
+Builds:
+  - versionName: '1.0'
+    versionCode: 1
+    commit: v1.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0'
+CurrentVersionCode: 1
