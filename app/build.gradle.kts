@@ -8,13 +8,13 @@ plugins {
 
 android {
     namespace = "com.joseg.healthstats"
-    compileSdk = 37
+    compileSdk = 36
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.joseg.healthstats"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
