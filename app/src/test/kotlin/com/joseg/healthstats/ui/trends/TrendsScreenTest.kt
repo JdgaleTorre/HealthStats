@@ -80,4 +80,26 @@ class TrendsScreenTest {
 
         composeTestRule.onNodeWithText("No sessions match this bucket yet.").assertExists()
     }
+
+    @Test
+    fun `initial loading state with no points yet does not crash the chart`() {
+        // This is TrendsUiState()'s actual default: isLoading = true, points = emptyList().
+        // Vico's chart model throws IllegalArgumentException on an empty series, so the
+        // screen must never compose the chart in this state.
+        val uiState = TrendsUiState(isLoading = true, points = emptyList())
+
+        composeTestRule.setContent {
+            MaterialTheme {
+                TrendsScreen(
+                    uiState = uiState,
+                    onSourceSelected = {},
+                    onExerciseTypeSelected = {},
+                    onMetricSelected = {},
+                )
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("No sessions match this bucket yet.").assertDoesNotExist()
+    }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,10 +60,16 @@ fun TrendsScreen(
             onSelected = onMetricSelected,
         )
 
-        if (uiState.points.isEmpty() && !uiState.isLoading) {
-            TrendsEmptyState(modifier = Modifier.fillMaxSize())
-        } else {
-            TrendChart(uiState = uiState, modifier = Modifier.fillMaxWidth().height(240.dp).padding(top = 16.dp))
+        // Vico's chart model rejects an empty series, so it must never be composed with no
+        // points, loading or not: show a spinner or the empty state until real data exists.
+        when {
+            uiState.points.isNotEmpty() ->
+                TrendChart(uiState = uiState, modifier = Modifier.fillMaxWidth().height(240.dp).padding(top = 16.dp))
+            uiState.isLoading ->
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            else -> TrendsEmptyState(modifier = Modifier.fillMaxSize())
         }
     }
 }
@@ -94,6 +101,7 @@ private fun TrendChart(uiState: TrendsUiState, modifier: Modifier = Modifier) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
     LaunchedEffect(uiState.points, uiState.metric) {
+        if (uiState.points.isEmpty()) return@LaunchedEffect
         modelProducer.runTransaction {
             lineSeries {
                 series(
