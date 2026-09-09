@@ -46,5 +46,20 @@
             </intent-filter>
         </activity-alias>
 
+        <!--
+          Required for the permission request to succeed at all on devices using the standalone
+          Health Connect app (Android <=13): its DefaultGateway routing activity checks for a
+          privacy-policy responder before proceeding, and silently aborts back to the caller if
+          none is declared, with no error shown to the user.
+        -->
+        <activity-alias
+            android:name=".PermissionsRationaleActivity"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity-alias>
+
     </application>
 </manifest>
