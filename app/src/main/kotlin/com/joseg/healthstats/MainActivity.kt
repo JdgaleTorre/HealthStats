@@ -8,7 +8,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -17,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.joseg.healthstats.data.healthconnect.HealthConnectManager
 import com.joseg.healthstats.ui.HealthStatsNavHost
+import com.joseg.healthstats.ui.theme.HealthStatsTheme
 
 class MainActivity : ComponentActivity() {
     private val container get() = (application as HealthStatsApp).container
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            HealthStatsTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     var permissionResultTrigger by remember { mutableIntStateOf(0) }
                     val requestPermissionsLauncher = rememberLauncherForActivityResult(

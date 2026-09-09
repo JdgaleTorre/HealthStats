@@ -1,12 +1,15 @@
 package com.joseg.healthstats.ui.sessionlist
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import com.joseg.healthstats.data.repository.HealthConnectRepositoryImpl
 import com.joseg.healthstats.fakes.FakeHealthConnectClient
 import com.joseg.healthstats.fakes.metadataWithDataOrigin
 import androidx.health.connect.client.records.metadata.DataOrigin
+import com.joseg.healthstats.ui.theme.HealthStatsTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -62,13 +65,14 @@ class SessionListScreenTest {
         )
 
         composeTestRule.setContent {
-            androidx.compose.material3.MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 SessionListScreen(uiState = uiState, onSessionClick = {})
             }
         }
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("Run 1").assertExists()
+        composeTestRule.onNodeWithTag(SessionListTestTag).performScrollToIndex(4)
         composeTestRule.onNodeWithText("Run 5").assertExists()
         assertEquals(0, fakeClient.aggregateCallCount)
         // The screen renders straight from the ExerciseSessionRecord list it's given; it never
@@ -81,7 +85,7 @@ class SessionListScreenTest {
         val uiState = SessionListUiState(sessions = emptyList(), isLoading = false)
 
         composeTestRule.setContent {
-            androidx.compose.material3.MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 SessionListScreen(uiState = uiState, onSessionClick = {})
             }
         }

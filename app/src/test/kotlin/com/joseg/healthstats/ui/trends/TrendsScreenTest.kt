@@ -1,12 +1,12 @@
 package com.joseg.healthstats.ui.trends
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.units.Length
 import com.joseg.healthstats.data.repository.TrendMetric
 import com.joseg.healthstats.data.repository.TrendSessionPoint
+import com.joseg.healthstats.ui.theme.HealthStatsTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +39,7 @@ class TrendsScreenTest {
         )
 
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 TrendsScreen(
                     uiState = uiState,
                     onSourceSelected = {},
@@ -68,7 +68,7 @@ class TrendsScreenTest {
         )
 
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 TrendsScreen(
                     uiState = uiState,
                     onSourceSelected = {},
@@ -89,7 +89,7 @@ class TrendsScreenTest {
         val uiState = TrendsUiState(isLoading = true, points = emptyList())
 
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 TrendsScreen(
                     uiState = uiState,
                     onSourceSelected = {},
