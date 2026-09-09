@@ -37,7 +37,7 @@
 
 ## 6. Release & Distribution
 
-- [ ] 6.1 Generate a release signing keystore and store it as GitHub encrypted secrets, verify a signed release APK can be produced via CI
-- [ ] 6.2 Configure a GitHub Actions release workflow that builds and attaches the signed APK to a GitHub Release on tag push, verify a test tag produces a downloadable artifact
-- [ ] 6.3 Write F-Droid metadata/build recipe, verify it passes local F-Droid build/lint tooling
-- [ ] 6.4 Audit all dependencies for FOSS license and reproducible-build compatibility, verify no proprietary or build-time-network-fetching dependency remains
+- [x] 6.1 Generate a release signing keystore and store it as GitHub encrypted secrets, verify a signed release APK can be produced via CI
+- [x] 6.2 Configure a GitHub Actions release workflow that builds and attaches the signed APK to a GitHub Release on tag push, verify a test tag produces a downloadable artifact
+- [x] 6.3 Write F-Droid metadata/build recipe, verify it passes local F-Droid build/lint tooling
+- [x] 6.4 Audit all dependencies for FOSS license and reproducible-build compatibility, verify no proprietary or build-time-network-fetching dependency remains
