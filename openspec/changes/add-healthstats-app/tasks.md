@@ -30,9 +30,14 @@
 - [x] 4.4 Implement the empty-state UI for no matching sessions, verify with a UI test
 - [x] 4.5 Verify switching the active source recomputes the trend using only that source's sessions, via a unit test
 
-## 5. Release & Distribution
+## 5. App Integration
 
-- [ ] 5.1 Generate a release signing keystore and store it as GitHub encrypted secrets, verify a signed release APK can be produced via CI
-- [ ] 5.2 Configure a GitHub Actions release workflow that builds and attaches the signed APK to a GitHub Release on tag push, verify a test tag produces a downloadable artifact
-- [ ] 5.3 Write F-Droid metadata/build recipe, verify it passes local F-Droid build/lint tooling
-- [ ] 5.4 Audit all dependencies for FOSS license and reproducible-build compatibility, verify no proprietary or build-time-network-fetching dependency remains
+- [x] 5.1 Build the onboarding Compose screen (availability + permission request flow) driving `OnboardingViewModel`, verify with UI tests for the unavailable/update-required/permission-blocked/ready states
+- [x] 5.2 Wire `MainActivity` with a navigation graph connecting onboarding → session list → session detail → trends, verify the app builds/installs and manually smoke-test the flow on an emulator
+
+## 6. Release & Distribution
+
+- [ ] 6.1 Generate a release signing keystore and store it as GitHub encrypted secrets, verify a signed release APK can be produced via CI
+- [ ] 6.2 Configure a GitHub Actions release workflow that builds and attaches the signed APK to a GitHub Release on tag push, verify a test tag produces a downloadable artifact
+- [ ] 6.3 Write F-Droid metadata/build recipe, verify it passes local F-Droid build/lint tooling
+- [ ] 6.4 Audit all dependencies for FOSS license and reproducible-build compatibility, verify no proprietary or build-time-network-fetching dependency remains

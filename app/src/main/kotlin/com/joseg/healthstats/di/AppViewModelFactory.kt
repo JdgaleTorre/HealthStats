@@ -6,6 +6,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.joseg.healthstats.data.healthconnect.HealthConnectManager
 import com.joseg.healthstats.data.repository.HealthConnectRepository
 import com.joseg.healthstats.ui.onboarding.OnboardingViewModel
+import com.joseg.healthstats.ui.sessiondetail.SessionDetailViewModel
+import com.joseg.healthstats.ui.sessionlist.SessionListViewModel
+import com.joseg.healthstats.ui.trends.TrendsViewModel
 
 /**
  * Builds every ViewModel the app has from container-provided dependencies. No DI framework.
@@ -21,5 +24,8 @@ class AppViewModelFactory(
 ) {
     val factory: ViewModelProvider.Factory = viewModelFactory {
         initializer { OnboardingViewModel(healthConnectManager) }
+        initializer { SessionListViewModel(repository()) }
+        initializer { SessionDetailViewModel(repository()) }
+        initializer { TrendsViewModel(repository()) }
     }
 }
