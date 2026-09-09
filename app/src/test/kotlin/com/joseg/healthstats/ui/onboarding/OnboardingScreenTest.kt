@@ -1,9 +1,9 @@
 package com.joseg.healthstats.ui.onboarding
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.joseg.healthstats.ui.theme.HealthStatsTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,7 +17,7 @@ class OnboardingScreenTest {
 
     private fun setContent(uiState: OnboardingUiState, onInstall: () -> Unit = {}, onRequest: () -> Unit = {}) {
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 OnboardingScreen(
                     uiState = uiState,
                     onInstallOrUpdateClick = onInstall,

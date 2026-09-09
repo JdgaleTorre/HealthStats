@@ -1,6 +1,5 @@
 package com.joseg.healthstats.ui.sessiondetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.health.connect.client.records.ExerciseSessionRecord
@@ -10,6 +9,7 @@ import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Velocity
 import com.joseg.healthstats.data.repository.SessionDetail
 import com.joseg.healthstats.fakes.metadataWithDataOrigin
+import com.joseg.healthstats.ui.theme.HealthStatsTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,7 +48,7 @@ class SessionDetailScreenTest {
         )
 
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 SessionDetailScreen(SessionDetailUiState(session = session, detail = detail, isLoading = false))
             }
         }
@@ -77,7 +77,7 @@ class SessionDetailScreenTest {
         )
 
         composeTestRule.setContent {
-            MaterialTheme {
+            HealthStatsTheme(darkTheme = false, dynamicColor = false) {
                 SessionDetailScreen(SessionDetailUiState(session = session, detail = detail, isLoading = false))
             }
         }

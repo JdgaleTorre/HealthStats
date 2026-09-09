@@ -2,6 +2,10 @@ package com.joseg.healthstats.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -131,7 +135,7 @@ private fun MainScaffold(navController: NavHostController, content: @Composable 
                             popUpTo(Routes.SESSIONS) { inclusive = true }
                         }
                     },
-                    icon = {},
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
                     label = { Text("Sessions") },
                 )
                 NavigationBarItem(
@@ -141,7 +145,7 @@ private fun MainScaffold(navController: NavHostController, content: @Composable 
                             popUpTo(Routes.SESSIONS)
                         }
                     },
-                    icon = {},
+                    icon = { Icon(Icons.Filled.ShowChart, contentDescription = null) },
                     label = { Text("Trends") },
                 )
             }
