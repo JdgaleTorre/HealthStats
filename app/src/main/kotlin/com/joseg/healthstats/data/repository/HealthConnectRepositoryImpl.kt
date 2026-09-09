@@ -79,6 +79,25 @@ class HealthConnectRepositoryImpl(private val client: HealthConnectClient) : Hea
         )
     }
 
+    override suspend fun computeTrendSessions(
+        exerciseType: Int,
+        source: String,
+        bucket: DistanceBucket,
+        startDate: Instant?,
+        endDate: Instant?,
+    ): List<TrendSessionPoint> {
+        val sessions = querySessions(
+            SessionFilter(source = source, exerciseType = exerciseType, startDate = startDate, endDate = endDate),
+        )
+        return sessions.mapNotNull { session ->
+            val detail = getSessionDetail(session)
+            val distance = detail.distance ?: return@mapNotNull null
+            val duration = detail.duration ?: return@mapNotNull null
+            if (!bucket.contains(distance)) return@mapNotNull null
+            TrendSessionPoint(date = session.startTime, duration = duration, distance = distance)
+        }.sortedBy { it.date }
+    }
+
     /** Pages through every accessible [ExerciseSessionRecord], unfiltered. */
     private suspend fun readAllExerciseSessions(
         timeRangeFilter: TimeRangeFilter = TimeRangeFilter.between(Instant.EPOCH, Instant.now()),

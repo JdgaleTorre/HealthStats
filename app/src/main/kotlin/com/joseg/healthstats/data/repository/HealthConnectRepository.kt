@@ -30,4 +30,17 @@ interface HealthConnectRepository {
      * combines data from a different source into the result.
      */
     suspend fun getSessionDetail(session: ExerciseSessionRecord): SessionDetail
+
+    /**
+     * Whole-session distance/duration for every session of [exerciseType] from [source] whose
+     * aggregated total distance falls within [bucket], restricted to [startDate]..[endDate].
+     * Never depends on per-kilometer split or lap data.
+     */
+    suspend fun computeTrendSessions(
+        exerciseType: Int,
+        source: String,
+        bucket: DistanceBucket,
+        startDate: Instant? = null,
+        endDate: Instant? = null,
+    ): List<TrendSessionPoint>
 }

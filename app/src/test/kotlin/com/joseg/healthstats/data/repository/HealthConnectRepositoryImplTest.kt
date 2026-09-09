@@ -280,4 +280,105 @@ class HealthConnectRepositoryImplTest {
             assertEquals(stravaSession.startTime, request.timeRangeFilterForTest.startTime)
             assertEquals(stravaSession.endTime, request.timeRangeFilterForTest.endTime)
         }
+
+    private fun distanceDurationResult(distanceMeters: Double, durationSeconds: Long) = AggregationResult(
+        longValues = mapOf(ExerciseSessionRecord.EXERCISE_DURATION_TOTAL.metricKey to durationSeconds),
+        doubleValues = mapOf(DistanceRecord.DISTANCE_TOTAL.metricKey to distanceMeters),
+        dataOrigins = emptySet(),
+    )
+
+    @Test
+    fun `computeTrendSessions keeps only sessions whose aggregated distance falls in the bucket`() = runTest {
+        // querySessions sorts newest-first, so aggregate fixtures must be queued in that order.
+        val day1 = session(
+            "com.strava",
+            ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            start = Instant.parse("2026-01-01T08:00:00Z"),
+            end = Instant.parse("2026-01-01T08:25:00Z"),
+        )
+        val day2 = session(
+            "com.strava",
+            ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            start = Instant.parse("2026-01-02T08:00:00Z"),
+            end = Instant.parse("2026-01-02T08:40:00Z"),
+        )
+        val day3 = session(
+            "com.strava",
+            ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            start = Instant.parse("2026-01-03T08:00:00Z"),
+            end = Instant.parse("2026-01-03T08:24:00Z"),
+        )
+        val fakeClient = FakeHealthConnectClient().apply {
+            exerciseSessions = listOf(day1, day2, day3)
+            // Queried newest-first: day3, day2, day1.
+            aggregateResponses.add(distanceDurationResult(distanceMeters = 4900.0, durationSeconds = 1440))
+            aggregateResponses.add(distanceDurationResult(distanceMeters = 8000.0, durationSeconds = 2400))
+            aggregateResponses.add(distanceDurationResult(distanceMeters = 5000.0, durationSeconds = 1500))
+        }
+        val repository = HealthConnectRepositoryImpl(fakeClient)
+
+        val trend = repository.computeTrendSessions(
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            source = "com.strava",
+            bucket = DistanceBucket.FIVE_K,
+        )
+
+        assertEquals(listOf(day1.startTime, day3.startTime), trend.map { it.date })
+    }
+
+    @Test
+    fun `computeTrendSessions honors a custom bucket`() = runTest {
+        val session10k = session("com.strava", ExerciseSessionRecord.EXERCISE_TYPE_RUNNING)
+        val fakeClient = FakeHealthConnectClient().apply {
+            exerciseSessions = listOf(session10k)
+            aggregateResponses.add(distanceDurationResult(distanceMeters = 10100.0, durationSeconds = 3000))
+        }
+        val repository = HealthConnectRepositoryImpl(fakeClient)
+
+        val trend = repository.computeTrendSessions(
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            source = "com.strava",
+            bucket = DistanceBucket(
+                target = androidx.health.connect.client.units.Length.kilometers(10.0),
+                tolerance = androidx.health.connect.client.units.Length.kilometers(0.2),
+            ),
+        )
+
+        assertEquals(1, trend.size)
+    }
+
+    @Test
+    fun `computeTrendSessions switching source recomputes using only that source's sessions`() = runTest {
+        val stravaSession = session("com.strava", ExerciseSessionRecord.EXERCISE_TYPE_RUNNING)
+        val garminSession = session("com.garmin.android.apps.connectmobile", ExerciseSessionRecord.EXERCISE_TYPE_RUNNING)
+        val fakeClient = FakeHealthConnectClient().apply {
+            exerciseSessions = listOf(stravaSession, garminSession)
+        }
+        val repository = HealthConnectRepositoryImpl(fakeClient)
+
+        fakeClient.aggregateResponses.add(distanceDurationResult(distanceMeters = 5000.0, durationSeconds = 1500))
+        val stravaTrend = repository.computeTrendSessions(
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            source = "com.strava",
+            bucket = DistanceBucket.FIVE_K,
+        )
+        assertEquals(1, stravaTrend.size)
+        assertEquals(
+            setOf("com.strava"),
+            fakeClient.capturedAggregateRequests.flatMap { it.dataOriginFilterForTest }.map { it.packageName }.toSet(),
+        )
+
+        fakeClient.capturedAggregateRequests.clear()
+        fakeClient.aggregateResponses.add(distanceDurationResult(distanceMeters = 5000.0, durationSeconds = 1600))
+        val garminTrend = repository.computeTrendSessions(
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+            source = "com.garmin.android.apps.connectmobile",
+            bucket = DistanceBucket.FIVE_K,
+        )
+        assertEquals(1, garminTrend.size)
+        assertEquals(
+            setOf("com.garmin.android.apps.connectmobile"),
+            fakeClient.capturedAggregateRequests.flatMap { it.dataOriginFilterForTest }.map { it.packageName }.toSet(),
+        )
+    }
 }

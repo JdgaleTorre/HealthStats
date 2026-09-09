@@ -24,11 +24,11 @@
 
 ## 4. Trends
 
-- [ ] 4.1 Implement distance-bucket filtering (target ± tolerance, default ±0.2 km) over per-session aggregated distance, verify unit tests including the default 5K preset and a custom bucket
-- [ ] 4.2 Implement pace and finish-time metric computation from whole-session aggregates only, verify unit tests for both metrics
-- [ ] 4.3 Build the Trends Compose screen with a Vico chart plus exercise-type, bucket, date-range, and source controls, verify a UI test renders the chart correctly against fixture data
-- [ ] 4.4 Implement the empty-state UI for no matching sessions, verify with a UI test
-- [ ] 4.5 Verify switching the active source recomputes the trend using only that source's sessions, via a unit test
+- [x] 4.1 Implement distance-bucket filtering (target ± tolerance, default ±0.2 km) over per-session aggregated distance, verify unit tests including the default 5K preset and a custom bucket
+- [x] 4.2 Implement pace and finish-time metric computation from whole-session aggregates only, verify unit tests for both metrics
+- [x] 4.3 Build the Trends Compose screen with a Vico chart plus exercise-type, bucket, date-range, and source controls, verify a UI test renders the chart correctly against fixture data
+- [x] 4.4 Implement the empty-state UI for no matching sessions, verify with a UI test
+- [x] 4.5 Verify switching the active source recomputes the trend using only that source's sessions, via a unit test
 
 ## 5. Release & Distribution
 
