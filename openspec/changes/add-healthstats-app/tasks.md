@@ -3,15 +3,15 @@
 - [x] 1.1 Scaffold Android project (Kotlin, Jetpack Compose, single module, minSdk 26) and verify it builds and installs via `./gradlew assembleDebug`
 - [x] 1.2 Add `androidx.health.connect:connect-client` and Vico dependencies, verify `./gradlew build` resolves them and no proprietary/non-FOSS transitive dependency is pulled in
 - [x] 1.3 Set up manual DI wiring (a single container providing `HealthConnectClient` and ViewModel factories), verify a ViewModel can be instantiated through it in a unit test
-- [ ] 1.4 Configure GitHub Actions CI workflow to run build + unit tests on push/PR, verify a PR triggers a green run
+- [x] 1.4 Configure GitHub Actions CI workflow to run build + unit tests on push/PR, verify a PR triggers a green run
 
 ## 2. Health Connect Access
 
-- [ ] 2.1 Implement SDK availability check (`getSdkStatus`) with unavailable/update-required/available branches, verify with unit tests covering all three
-- [ ] 2.2 Implement read-only permission request flow for exercise session, distance, heart rate, calories, elevation, speed, and steps, verify granted/partial/denied states each drive the correct app state in unit tests
-- [ ] 2.3 Implement source discovery (distinct `dataOrigin` values across accessible exercise sessions), verify with a unit test against fixture data
-- [ ] 2.4 Implement exercise-type discovery (distinct types present in accessible sessions, not the full ~80-value enum) for filter options, verify with a unit test
-- [ ] 2.5 Verify no write permission is ever requested, via a unit test enumerating the app's requested permission set
+- [x] 2.1 Implement SDK availability check (`getSdkStatus`) with unavailable/update-required/available branches, verify with unit tests covering all three
+- [x] 2.2 Implement read-only permission request flow for exercise session, distance, heart rate, calories, elevation, speed, and steps, verify granted/partial/denied states each drive the correct app state in unit tests
+- [x] 2.3 Implement source discovery (distinct `dataOrigin` values across accessible exercise sessions), verify with a unit test against fixture data
+- [x] 2.4 Implement exercise-type discovery (distinct types present in accessible sessions, not the full ~80-value enum) for filter options, verify with a unit test
+- [x] 2.5 Verify no write permission is ever requested, via a unit test enumerating the app's requested permission set
 
 ## 3. Session Browsing
 

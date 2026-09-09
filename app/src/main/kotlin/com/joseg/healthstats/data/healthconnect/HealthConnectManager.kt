@@ -20,8 +20,11 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 open class HealthConnectManager(private val context: Context) {
 
     companion object {
+        val EXERCISE_SESSION_READ_PERMISSION: String =
+            HealthPermission.getReadPermission(ExerciseSessionRecord::class)
+
         val REQUIRED_PERMISSIONS: Set<String> = setOf(
-            HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+            EXERCISE_SESSION_READ_PERMISSION,
             HealthPermission.getReadPermission(DistanceRecord::class),
             HealthPermission.getReadPermission(HeartRateRecord::class),
             HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -31,13 +34,15 @@ open class HealthConnectManager(private val context: Context) {
         )
     }
 
-    open fun getSdkStatus(): HealthConnectAvailability =
-        when (HealthConnectClient.getSdkStatus(context)) {
-            HealthConnectClient.SDK_AVAILABLE -> HealthConnectAvailability.Available
-            HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED ->
-                HealthConnectAvailability.UpdateRequired
-            else -> HealthConnectAvailability.Unavailable
-        }
+    open fun getSdkStatus(): HealthConnectAvailability = when (rawSdkStatus()) {
+        HealthConnectClient.SDK_AVAILABLE -> HealthConnectAvailability.Available
+        HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED ->
+            HealthConnectAvailability.UpdateRequired
+        else -> HealthConnectAvailability.Unavailable
+    }
+
+    /** Seam for tests: the real implementation just forwards to the SDK's own status check. */
+    protected open fun rawSdkStatus(): Int = HealthConnectClient.getSdkStatus(context)
 
     /** Only valid to call once [getSdkStatus] has reported [HealthConnectAvailability.Available]. */
     open val client: HealthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
