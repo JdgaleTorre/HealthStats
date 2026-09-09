@@ -33,6 +33,11 @@ class FakeHealthConnectClient(
     /** AggregateRequest exposes no public properties to branch on, so tests queue responses in call order. */
     val aggregateResponses: ArrayDeque<AggregationResult> = ArrayDeque()
 
+    var readRecordsCallCount: Int = 0
+        private set
+    var aggregateCallCount: Int = 0
+        private set
+
     override val permissionController: PermissionController
         get() = throw NotImplementedError("not used by repository tests")
 
@@ -40,6 +45,7 @@ class FakeHealthConnectClient(
     override suspend fun <T : Record> readRecords(
         request: ReadRecordsRequest<T>,
     ): ReadRecordsResponse<T> {
+        readRecordsCallCount++
         require(request.recordType == ExerciseSessionRecord::class) {
             "FakeHealthConnectClient only fixtures ExerciseSessionRecord reads"
         }
@@ -56,9 +62,11 @@ class FakeHealthConnectClient(
         return ReadRecordsResponse(page as List<T>, nextToken)
     }
 
-    override suspend fun aggregate(request: AggregateRequest): AggregationResult =
-        aggregateResponses.removeFirstOrNull()
+    override suspend fun aggregate(request: AggregateRequest): AggregationResult {
+        aggregateCallCount++
+        return aggregateResponses.removeFirstOrNull()
             ?: throw NotImplementedError("no fixture aggregate response queued")
+    }
 
     override suspend fun insertRecords(records: List<Record>): InsertRecordsResponse =
         throw NotImplementedError("app is read-only")

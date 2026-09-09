@@ -15,9 +15,9 @@
 
 ## 3. Session Browsing
 
-- [ ] 3.1 Implement repository query for exercise sessions filtered by source, exercise type, and date range (individually and combined), verify with unit tests per filter and combination
-- [ ] 3.2 Build the session list Compose screen rendering only session-record fields, verify a test asserts no per-row aggregate query is issued (e.g. query-count assertion against a fake client)
-- [ ] 3.3 Implement the empty-state UI for no matching sessions, verify with a UI test
+- [x] 3.1 Implement repository query for exercise sessions filtered by source, exercise type, and date range (individually and combined), verify with unit tests per filter and combination
+- [x] 3.2 Build the session list Compose screen rendering only session-record fields, verify a test asserts no per-row aggregate query is issued (e.g. query-count assertion against a fake client)
+- [x] 3.3 Implement the empty-state UI for no matching sessions, verify with a UI test
 - [ ] 3.4 Implement on-demand session detail aggregation scoped to the session's own time window and source, verify unit tests for a base-fields-only source and a richer-fields source
 - [ ] 3.5 Build the session detail Compose screen, showing available fields and omitting absent ones (never showing fake zeros), verify with UI tests for both source-richness scenarios
 - [ ] 3.6 Verify detail view never merges another source's overlapping-time data, via a unit test with fixture data from two overlapping sources

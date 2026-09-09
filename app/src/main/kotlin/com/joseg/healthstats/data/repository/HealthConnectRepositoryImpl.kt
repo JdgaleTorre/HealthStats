@@ -21,6 +21,21 @@ class HealthConnectRepositoryImpl(private val client: HealthConnectClient) : Hea
             .distinct()
             .sorted()
 
+    override suspend fun querySessions(filter: SessionFilter): List<ExerciseSessionRecord> {
+        val timeRangeFilter = TimeRangeFilter.between(
+            filter.startDate ?: Instant.EPOCH,
+            filter.endDate ?: Instant.now(),
+        )
+        val dataOriginFilter = filter.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        return readAllExerciseSessions(timeRangeFilter, dataOriginFilter)
+            .filter { filter.exerciseType == null || it.exerciseType == filter.exerciseType }
+            // TimeRangeFilter matches any session overlapping the range; the spec is stricter
+            // ("start time falls within that range"), so re-check start time explicitly.
+            .filter { filter.startDate == null || !it.startTime.isBefore(filter.startDate) }
+            .filter { filter.endDate == null || it.startTime.isBefore(filter.endDate) }
+            .sortedByDescending { it.startTime }
+    }
+
     /** Pages through every accessible [ExerciseSessionRecord], unfiltered. */
     private suspend fun readAllExerciseSessions(
         timeRangeFilter: TimeRangeFilter = TimeRangeFilter.between(Instant.EPOCH, Instant.now()),

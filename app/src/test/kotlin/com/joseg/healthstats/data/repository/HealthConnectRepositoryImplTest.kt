@@ -75,4 +75,96 @@ class HealthConnectRepositoryImplTest {
             repository.listExerciseTypes(),
         )
     }
+
+    private fun sessionRepositoryWithFixtures(): HealthConnectRepositoryImpl {
+        val fakeClient = FakeHealthConnectClient().apply {
+            exerciseSessions = listOf(
+                session(
+                    "com.strava",
+                    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                    start = Instant.parse("2026-01-01T08:00:00Z"),
+                    end = Instant.parse("2026-01-01T09:00:00Z"),
+                ),
+                session(
+                    "com.strava",
+                    ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+                    start = Instant.parse("2026-02-01T08:00:00Z"),
+                    end = Instant.parse("2026-02-01T10:00:00Z"),
+                ),
+                session(
+                    "com.garmin.android.apps.connectmobile",
+                    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                    start = Instant.parse("2026-03-01T08:00:00Z"),
+                    end = Instant.parse("2026-03-01T09:00:00Z"),
+                ),
+            )
+        }
+        return HealthConnectRepositoryImpl(fakeClient)
+    }
+
+    @Test
+    fun `querySessions with no filter returns every session, newest first`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(SessionFilter())
+        assertEquals(3, result.size)
+        assertEquals(Instant.parse("2026-03-01T08:00:00Z"), result.first().startTime)
+    }
+
+    @Test
+    fun `querySessions filters by source`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(SessionFilter(source = "com.strava"))
+        assertEquals(2, result.size)
+        assertEquals(setOf("com.strava"), result.map { it.metadata.dataOrigin.packageName }.toSet())
+    }
+
+    @Test
+    fun `querySessions filters by exercise type`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(
+            SessionFilter(exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING),
+        )
+        assertEquals(2, result.size)
+        assertEquals(
+            setOf(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING),
+            result.map { it.exerciseType }.toSet(),
+        )
+    }
+
+    @Test
+    fun `querySessions filters by date range using start time`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(
+            SessionFilter(
+                startDate = Instant.parse("2026-01-15T00:00:00Z"),
+                endDate = Instant.parse("2026-02-15T00:00:00Z"),
+            ),
+        )
+        assertEquals(1, result.size)
+        assertEquals(Instant.parse("2026-02-01T08:00:00Z"), result.single().startTime)
+    }
+
+    @Test
+    fun `querySessions combines source, type, and date range with AND`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(
+            SessionFilter(
+                source = "com.strava",
+                exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                startDate = Instant.parse("2025-12-01T00:00:00Z"),
+                endDate = Instant.parse("2026-06-01T00:00:00Z"),
+            ),
+        )
+        assertEquals(1, result.size)
+        val onlyMatch = result.single()
+        assertEquals("com.strava", onlyMatch.metadata.dataOrigin.packageName)
+        assertEquals(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING, onlyMatch.exerciseType)
+    }
+
+    @Test
+    fun `querySessions returns empty list when nothing matches`() = runTest {
+        val repository = sessionRepositoryWithFixtures()
+        val result = repository.querySessions(SessionFilter(source = "com.nonexistent.app"))
+        assertEquals(emptyList<ExerciseSessionRecord>(), result)
+    }
 }
